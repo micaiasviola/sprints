@@ -14,18 +14,21 @@
 #define MAX_LINHA 100   // tamanho maximo do buffer de leitura de uma linha de arquivo
 #define MAX_PRODUTO 100 // quantidade maxima de produtos cadastrados
 
-int idSessao = 0;  // variavel para controle de "sessao", identifica o usuario logado
-int position;      // variavel de controle
-int excedido = 0;  // variavel de controle
-int idUsuario = 0; // inicia com valor 0 antes da leitura dos usuarios ser feita e atribuida ao id
-int idproduto = 0; // #SPRINT 2 contem o id de cada produto cadastrado
-char debito[] = "debito";//#SPRINT3 
+int idSessao = 0;             // variavel para controle de "sessao", identifica o usuario logado
+int position = 0;             // variavel de controle
+int idvenda = 0;              // SPRINT 3  - id relatorio de vendas
+int excedido = 0;             // variavel de controle
+int idUsuario = 0;            // inicia com valor 0 antes da leitura dos usuarios ser feita e atribuida ao id
+int idproduto = 0;            // #SPRINT 2 contem o id de cada produto cadastrado
+char debito[] = "debito";     // SPRINT 3
+char credito[] = "credito";   // SPRINT 3
+char dinheiro[] = "dinheiro"; // SPRINT 3
 char senhaADM[] = "1234";
 char senhaAdmin[MAX_SENHA];
 char adm[] = "adm";
 char caixa[] = "caixa";
 
-typedef struct//#SPRINT 3
+typedef struct // #SPRINT 3
 {
     int id;
     char vendedor[30];
@@ -36,8 +39,8 @@ typedef struct//#SPRINT 3
 } structvendas;
 
 structvendas vendas[999];
-typedef struct//#SPRINT 1
-{ // estrutura de variaveis atribuídas a um usuario
+typedef struct // #SPRINT 1
+{              // estrutura de variaveis atribuídas a um usuario
     char nome[MAX_NOME];
     char senha[MAX_SENHA];
     char cargo[MAX_NOME];
@@ -46,22 +49,22 @@ typedef struct//#SPRINT 1
 
 estrutura user[MAX_USUARIOS]; // array com os valores da estrutura
 
-typedef struct //#SPRINT 2
-{ // #SPRINT 2 estrutura de variaveis atribuidas a um produto
+typedef struct // #SPRINT 2
+{              // #SPRINT 2 estrutura de variaveis atribuidas a um produto
     char nome[MAX_NOME];
     int id;
     float preco;
 } structproduto;
 
-structproduto produto[MAX_PRODUTO];//array com os valores da estrutura
+structproduto produto[MAX_PRODUTO]; // array com os valores da estrutura
 
-int limpar_tela() //#SPRINT 1 funcao para limpar a tela
+int limpar_tela() // #SPRINT 1 funcao para limpar a tela
 {
     system("cls"); // comando do Windows para limpar a tela
     return 1;
 }
 
-void limpabuffer() //#SPRINT 1 funcao para limpar o buffer apos um endereco de memoria ser escrito
+void limpabuffer() // #SPRINT 1 funcao para limpar o buffer apos um endereco de memoria ser escrito
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF)
@@ -70,7 +73,20 @@ void limpabuffer() //#SPRINT 1 funcao para limpar o buffer apos um endereco de m
     }
 }
 
-void toLowerCase(char *str) //#SPRINT 1 transforma maiusculo em minusculo
+int contemLetras(const char *str) // SPRINT 3 - Verifica se contem letras na string
+{
+    while (*str)
+    {
+        if (isalpha((unsigned char)*str))
+        {
+            return 1; // Retorna 1 se encontrar uma letra
+        }
+        str++;
+    }
+    return 0; // Retorna 0 se não encontrar nenhuma letra
+}
+
+void toLowerCase(char *str) // #SPRINT 1 transforma maiusculo em minusculo
 {
     int i = 0;
     while (str[i] != '\0')
@@ -80,7 +96,7 @@ void toLowerCase(char *str) //#SPRINT 1 transforma maiusculo em minusculo
     }
 }
 
-void remove_espacos(char *str) //#SPRINT 1 remove espacos de uma string
+void remove_espacos(char *str) // #SPRINT 1 remove espacos de uma string
 {
     char *dest = str; // ponteiro para o destino da string sem espacos
     while (*str)
@@ -94,8 +110,7 @@ void remove_espacos(char *str) //#SPRINT 1 remove espacos de uma string
     *dest = '\0'; // adiciona o caractere nulo no final da nova string
 }
 
-
-bool verificastringdigito(const char *string)//#SPRINT 2 FUNÇÃO QUE VERIFICA SE A STRING POSSUI NUMEROS
+bool verificastringdigito(const char *string) // #SPRINT 2 FUNÇÃO QUE VERIFICA SE A STRING POSSUI NUMEROS
 {
     while (*string)
     {
@@ -108,7 +123,7 @@ bool verificastringdigito(const char *string)//#SPRINT 2 FUNÇÃO QUE VERIFICA S
     return false;
 }
 
-void lerProduto()//#SPRINT 2 - responsavel pela leitura do banco de dados produtos.txt e atribuição dos produtos ao array de produtos
+void lerProduto() // #SPRINT 2 - responsavel pela leitura do banco de dados produtos.txt e atribuição dos produtos ao array de produtos
 {
     FILE *lerproduto = fopen("produtos.txt", "r");
     if (lerproduto == NULL)
@@ -126,25 +141,25 @@ void lerProduto()//#SPRINT 2 - responsavel pela leitura do banco de dados produt
         linha[strcspn(linha, "\n")] = '\0';
         char *parse = strtok(linha, "|");
 
-        produto[idproduto].id = atoi(parse);// atribui o id ao produto lido
+        produto[idproduto].id = atoi(parse); // atribui o id ao produto lido
         // printf("%i|", produto[idproduto].id);
         if (parse != NULL)
         {
 
             parse = strtok(NULL, "|");
-            strcpy(produto[idproduto].nome, parse);//atribui o nome ao produto lido
+            strcpy(produto[idproduto].nome, parse); // atribui o nome ao produto lido
             // printf("%s|", produto[idproduto].nome);
 
             if (parse != NULL)
             {
                 parse = strtok(NULL, "|");
-                produto[idproduto].preco = (float)atof(parse);//atribui o preço ao produto lido
+                produto[idproduto].preco = (float)atof(parse); // atribui o preço ao produto lido
                 // printf("%.2f\n", produto[idproduto].preco);
                 // printf("%i|", produto[idproduto].id);
                 // printf("%s|", produto[idproduto].nome);
                 // printf("%.2f\n", produto[idproduto].preco);
                 idproduto++;
-                if (idproduto >= MAX_PRODUTO)//se quant de produtos maximos cadastrados
+                if (idproduto >= MAX_PRODUTO) // se quant de produtos maximos cadastrados
                 {
                     limpar_tela();
                     printf("numero de produtos maximos cadastrados excedidos!");
@@ -156,27 +171,27 @@ void lerProduto()//#SPRINT 2 - responsavel pela leitura do banco de dados produt
 
     fclose(lerproduto);
 }
-void menuProdutos()//#SPRINT 2, Função que imprime na tela todos os produtos para consulta
+void menuProdutos() // #SPRINT 2, Função que imprime na tela todos os produtos para consulta
 {
     // lerProduto();
     printf("\t       MENU\n\n");
 
-    for (int i = 0; i < idproduto; i++)//percorre o array produtos a quantidade de produtos cadastrados
+    for (int i = 0; i < idproduto; i++) // percorre o array produtos a quantidade de produtos cadastrados
     {
-        printf("\tCOD: %i -- %s -- R$%.2f KG\n\n", produto[i].id, produto[i].nome, produto[i].preco);//printa o menu na tela
+        printf("\tCOD: %i -- %s -- R$%.2f KG\n\n", produto[i].id, produto[i].nome, produto[i].preco); // printa o menu na tela
     }
 }
 
-void substituirProdutoNoArquivo(int id, structproduto NovoP)//#SPRINT 2
+void substituirProdutoNoArquivo(int id, structproduto NovoP) // #SPRINT 2
 {
     /*A RAZAO DESSA FUNÇÃO É PARA PODER APAGAR E RESSCREVER UMA NOVA LISTA DE PRODUTOS COM OS VALORES ANTERIORES POREM COM ALTERAÇÕES, PARA MUDAR O VALOR DE UM PRODUTO POR
     EXEMPLO. PRIMEIRO SE ABRE O ARQUIVO ORIGINAL PRODUTOS.TXT EM MOTO LEITURA E FAZ A VARREDURA DE TODAS AS LINHAS. CASO O PRODUTO A SER CADASTRADO JA FOR EXISTE, A FUNCAO
     CADASTRARPRODUTOS IRA ME RETORNAR O ID DO PRODUTO EM INT E ARMAZENARA O ID DA ESTRUTURA PRODUTO EM UMA NOVA ESTRUTURA DEFINIDA NESSA FUNCAO COMO NOVOP. APOS ISSO,
     DURANTE A VARREDURA NO LOOPING WHILE, OS VALORES DAS LINHAS SAO ARMAZENAS EM VARIAVEIS DE CONTROLE EXISTENTE. E SE O PRODUTO FOR EXISTENTE IREMOS ESCREVER NO NOVO ARQUIVO
     NA MESMA LINHA ORIGINAL AO ARQUIVO ANTERIOR, E POR FIM O ARQUIVO ORIGINAL SERA RESSCRITO EM UM ARQUIVO NOVO DE MESMO NOME E SERA APAGADO*/
-    
-    FILE *arquivo = fopen("produtos.txt", "r");//arquivo original
-    FILE *arquivoTemp = fopen("temp.txt", "w");//arquivo reescrito
+
+    FILE *arquivo = fopen("produtos.txt", "r"); // arquivo original
+    FILE *arquivoTemp = fopen("temp.txt", "w"); // arquivo reescrito
 
     if (arquivo == NULL || arquivoTemp == NULL)
     {
@@ -184,8 +199,8 @@ void substituirProdutoNoArquivo(int id, structproduto NovoP)//#SPRINT 2
         return;
     }
 
-    char linha[256];//ate 255 caracteres por linha
-    while (fgets(linha, sizeof(linha), arquivo))//lê linha do banco de dados
+    char linha[256];                             // ate 255 caracteres por linha
+    while (fgets(linha, sizeof(linha), arquivo)) // lê linha do banco de dados
     {
         int idExistente;
         char nomeExistente[MAX_NOME];
@@ -216,169 +231,164 @@ void substituirProdutoNoArquivo(int id, structproduto NovoP)//#SPRINT 2
     printf("\n\tProduto atualizado com sucesso!\n");
 }
 
-void cadastrarProduto()//#SPRINT 2, realiza o cadastro de produtos no banco de dados
+void cadastrarProduto() // #SPRINT 2, realiza o cadastro de produtos no banco de dados
 {
-    char entrada[MAX_NOME];//nome do produto a ser cadastrado
-    menuProdutos();//imprime o menu de produtos para consulta
-    structproduto NovoP;//um novo array de produtos para compração de produto existente e cadastro de novo produto
+    char entrada[MAX_NOME]; // nome do produto a ser cadastrado
+    menuProdutos();         // imprime o menu de produtos para consulta
+    structproduto NovoP;    // um novo array de produtos para compração de produto existente e cadastro de novo produto
     printf("\n\tInsira o nome do produto que deseja cadastrar: ");
-    if (fgets(entrada, sizeof(entrada), stdin) != NULL)//nome do produto
+    if (fgets(entrada, sizeof(entrada), stdin) != NULL) // nome do produto
     {
         entrada[strcspn(entrada, "\n")] = '\0';
+        
+        char entradanome[30];
+
         remove_espacos(entrada);
         toLowerCase(entrada);
+        strcpy(entradanome, entrada);
+        int entradaid = atoi(entrada);
+        if (strlen(entrada) >= 3 || entradaid > 0) // se nome do produto for maior que 3 caracteres
+        {
+            strcpy(NovoP.nome, entradanome); // atribui o novo nome do produto a variavel nome do array NovoP
 
-        if (verificastringdigito(entrada))//se nome contem numeros então:
-        {
-            perror("\tNome invalido");
-            getch();
-            return;
-        }
-        else // se nao:
-        {
-            if (strlen(entrada) >= 3)//se nome do produto for maior que 3 caracteres
+            for (int i = 0; i < idproduto; i++) // percorre os produtos cadastrados e verifica se o produto ja existe
             {
-                strcpy(NovoP.nome, entrada);//atribui o novo nome do produto a variavel nome do array NovoP
-                
-                for (int i = 0; i < idproduto; i++)//percorre os produtos cadastrados e verifica se o produto ja existe
+                if (strcmp(NovoP.nome, produto[i].nome) == 0 || entradaid == produto[i].id) // se existe:
                 {
-                    if (strcmp(NovoP.nome, produto[i].nome) == 0)//se existe:
+                    printf("\tO item %s ja esta cadastrado! Deseja alterar o valor? (s) sim (n) nao: ", produto[i].nome); // deseja alterar o produto?
+                    char resposta[10];
+
+                    if (fgets(resposta, sizeof(resposta), stdin))
                     {
-                        printf("\tO item %s ja esta cadastrado! Deseja alterar o valor? (s) sim (n) nao: ", produto[i].nome);//deseja alterar o produto?
-                        char resposta[10];
+                        resposta[strcspn(resposta, "\n")] = '\0';
 
-                        if (fgets(resposta, sizeof(resposta), stdin))
+                        if (strcmp(resposta, "s") == 0 || strcmp(resposta, "S") == 0) // se deseja alterar o produto
                         {
-                            resposta[strcspn(resposta, "\n")] = '\0';
+                            char novopreco[15]; // Buffer maior para o preco
+                            float novoprecofloat;
+                            printf("\tInsira o novo preco por kg: ");
 
-                            if (strcmp(resposta, "s") == 0 || strcmp(resposta, "S") == 0)//se deseja alterar o produto
+                            if (fgets(novopreco, sizeof(novopreco), stdin) != NULL) // lê o novo valor do produto a ser alterado
                             {
-                                char novopreco[15]; // Buffer maior para o preco
-                                float novoprecofloat;
-                                printf("\tInsira o novo preco por kg: ");
+                                novopreco[strcspn(novopreco, "\n")] = '\0';
+                                novoprecofloat = strtof(novopreco, NULL); // strftof() transforma string em float e atribui na variavel novoprecofloat
 
-                                if (fgets(novopreco, sizeof(novopreco), stdin) != NULL)//lê o novo valor do produto a ser alterado
+                                produto[i].preco = novoprecofloat; // atribui o novo preco ao produto
+                                if (produto[i].preco > 0)          // se preço for valido
                                 {
-                                    novopreco[strcspn(novopreco, "\n")] = '\0';
-                                    novoprecofloat = strtof(novopreco, NULL);//strftof() transforma string em float e atribui na variavel novoprecofloat
+                                    printf("\n\tResumo do produto a ser cadastrado:\n");
+                                    printf("\tNome: %s\n", produto[i].nome);
+                                    printf("\tpreco por kg: R$%.2f\n", produto[i].preco);
+                                    printf("\t1 - Confirma\n\t2 - Cancela\n\tEscolha: ");
 
-                                    produto[i].preco = novoprecofloat;//atribui o novo preco ao produto 
-                                    if (produto[i].preco > 0) // se preço for valido
+                                    char opcao1[10];
+                                    if (fgets(opcao1, sizeof(opcao1), stdin) != NULL) // le 1 confirma ou 2 cancela
                                     {
-                                        printf("\n\tResumo do produto a ser cadastrado:\n");
-                                        printf("\tNome: %s\n", produto[i].nome);
-                                        printf("\tpreco por kg: R$%.2f\n", produto[i].preco);
-                                        printf("\t1 - Confirma\n\t2 - Cancela\n\tEscolha: ");
+                                        int escolha = atoi(opcao1); // atoi() transforma string em inteiro
 
-                                        char opcao1[10];
-                                        if (fgets(opcao1, sizeof(opcao1), stdin) != NULL)//le 1 confirma ou 2 cancela
+                                        switch (escolha)
                                         {
-                                            int escolha = atoi(opcao1);//atoi() transforma string em inteiro
+                                        case 1:                                                    // Confirma
+                                            substituirProdutoNoArquivo(produto[i].id, produto[i]); // Chama a função que faz a alteração do valor no banco de dados, passando como parametro o endereço do produto a ser alterado
+                                            getch();
+                                            break;
+                                        case 2: // Cancelar
+                                            limpar_tela();
+                                            printf("\tAlteracao do produto cancelada.\n");
+                                            break;
 
-                                            switch (escolha)
-                                            {
-                                            case 1://Confirma
-                                                substituirProdutoNoArquivo(produto[i].id, produto[i]); //Chama a função que faz a alteração do valor no banco de dados, passando como parametro o endereço do produto a ser alterado
-                                                getch();
-                                                break;
-                                            case 2: // Cancelar
-                                                limpar_tela();
-                                                printf("\tAlteracao do produto cancelada.\n");
-                                                break;
-
-                                            default:
-                                                printf("Opção inválida. Cadastro não realizado.\n");
-                                                break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            perror("Invalid");
-                                            return;
+                                        default:
+                                            printf("Opção inválida. Cadastro não realizado.\n");
+                                            break;
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    printf("Usuário escolheu não. Cancelando a alteracao...\n");
+                                    else
+                                    {
+                                        perror("Invalid");
+                                        return;
+                                    }
                                 }
                             }
                             else
                             {
-                                printf("Erro ao ler a entrada.\n");
-                            }
-                            return; // Parar a função após alterar o produto
-                        }
-                    }
-                }
-                // Se o produto não existe, solicitar preco e confirmar o cadastro
-                limpar_tela();
-                printf("\n\tInsira o preco do KG do(a) %s: ", entrada);
-                char novopreco[15];
-                if (fgets(novopreco, sizeof(novopreco), stdin) != NULL)//le o novo preço em string
-                {
-                    NovoP.preco = strtof(novopreco, NULL); //transforma a string em float e atribui na variavel preco do NovoP
-                    if (NovoP.preco > 0)
-                    {
-                        NovoP.id = idproduto + 1; // Atribuir ID do novo produto
-
-                        // Mostrar informações para confirmação
-                        printf("\n\tResumo do produto a ser cadastrado:\n");
-                        printf("\tNome: %s\n", NovoP.nome);
-                        printf("\tpreco por kg: R$%.2f\n", NovoP.preco);
-                        printf("\t1 - Confirma\n\t2 - Cancela\n\tEscolha: ");
-
-                        char opcao[10];
-                        if (fgets(opcao, sizeof(opcao), stdin) != NULL)
-                        {
-                            int escolha = atoi(opcao);
-
-                            switch (escolha)
-                            {
-                            case 1: // Confirmar
-                                produto[idproduto] = NovoP;
-                                idproduto++;
-
-                                // Escrever o novo produto no banco de dados produtos.txt
-                                FILE *escreveProduto = fopen("produtos.txt", "a");
-                                if (escreveProduto != NULL)
-                                {
-                                    fprintf(escreveProduto, "%i|%s|%.2f\n", NovoP.id, NovoP.nome, NovoP.preco);
-                                    fclose(escreveProduto);
-                                    printf("\n\tProduto cadastrado com sucesso\n");
-                                }
-                                else
-                                {
-                                    printf("Erro ao abrir o arquivo de produtos!\n");
-                                }
-                                break;
-
-                            case 2: // Cancelar
-                                printf("Cadastro do produto cancelado.\n");
-                                break;
-
-                            default:
-                                printf("Opção inválida. Cadastro não realizado.\n");
-                                break;
+                                printf("Usuário escolheu não. Cancelando a alteracao...\n");
                             }
                         }
                         else
                         {
-                            printf("Erro ao ler a escolha. Cadastro não realizado.\n");
+                            printf("Erro ao ler a entrada.\n");
+                        }
+                        return; // Parar a função após alterar o produto
+                    }
+                }
+            }
+            // Se o produto não existe, solicitar preco e confirmar o cadastro
+            limpar_tela();
+            printf("\n\tInsira o preco do KG do(a) %s: ", entrada);
+            char novopreco[15];
+            if (fgets(novopreco, sizeof(novopreco), stdin) != NULL) // le o novo preço em string
+            {
+                NovoP.preco = strtof(novopreco, NULL); // transforma a string em float e atribui na variavel preco do NovoP
+                if (NovoP.preco > 0)
+                {
+                    NovoP.id = idproduto + 1; // Atribuir ID do novo produto
+
+                    // Mostrar informações para confirmação
+                    printf("\n\tResumo do produto a ser cadastrado:\n");
+                    printf("\tNome: %s\n", NovoP.nome);
+                    printf("\tpreco por kg: R$%.2f\n", NovoP.preco);
+                    printf("\t1 - Confirma\n\t2 - Cancela\n\tEscolha: ");
+
+                    char opcao[10];
+                    if (fgets(opcao, sizeof(opcao), stdin) != NULL)
+                    {
+                        int escolha = atoi(opcao);
+
+                        switch (escolha)
+                        {
+                        case 1: // Confirmar
+                            produto[idproduto] = NovoP;
+                            idproduto++;
+
+                            // Escrever o novo produto no banco de dados produtos.txt
+                            FILE *escreveProduto = fopen("produtos.txt", "a");
+                            if (escreveProduto != NULL)
+                            {
+                                fprintf(escreveProduto, "%i|%s|%.2f\n", NovoP.id, NovoP.nome, NovoP.preco);
+                                fclose(escreveProduto);
+                                printf("\n\tProduto cadastrado com sucesso\n");
+                            }
+                            else
+                            {
+                                printf("Erro ao abrir o arquivo de produtos!\n");
+                            }
+                            break;
+
+                        case 2: // Cancelar
+                            printf("Cadastro do produto cancelado.\n");
+                            break;
+
+                        default:
+                            printf("Opção inválida. Cadastro não realizado.\n");
+                            break;
                         }
                     }
                     else
                     {
-                        printf("preco inválido...\n");
+                        printf("Erro ao ler a escolha. Cadastro não realizado.\n");
                     }
                 }
+                else
+                {
+                    printf("preco inválido...\n");
+                }
             }
-            else
-            {
-                limpar_tela();
-                perror("Invalido");
-                getch();
-            }
+        }
+        else
+        {
+            limpar_tela();
+            perror("Invalido");
+            getch();
         }
     }
 
@@ -389,14 +399,12 @@ void cadastrarProduto()//#SPRINT 2, realiza o cadastro de produtos no banco de d
     }
 }
 
-
-
-void excluirProduto()//#SPRINT 2, função que permite excluir algum produto tanto pelo id quanto pelo nome, ela tambem reescreve o banco de dados após a exclusão para atualizar o id de todos os produtos após a exclusão de um.
+void excluirProduto() // #SPRINT 2, função que permite excluir algum produto tanto pelo id quanto pelo nome, ela tambem reescreve o banco de dados após a exclusão para atualizar o id de todos os produtos após a exclusão de um.
 {
 
     printf("\tDigite o ID/NOME do produto que deseja excluir: ");
     int idProduto;
-    char idStr[MAX_NOME]; //buffer para entrada de dados
+    char idStr[MAX_NOME]; // buffer para entrada de dados
     if (fgets(idStr, sizeof(idStr), stdin) != NULL)
     {
         idStr[strcspn(idStr, "\n")] = '\0';
@@ -404,15 +412,15 @@ void excluirProduto()//#SPRINT 2, função que permite excluir algum produto tan
 
         idProduto = atoi(idStr); // Converter a string para número
 
-        int encontrado = -1;//variavel de controle caso o produto exista
+        int encontrado = -1; // variavel de controle caso o produto exista
         for (int i = 0; i < idproduto; i++)
         {
             if (produto[i].id == idProduto || strcmp(produto[i].nome, idStr) == 0) // entende tando o ID como o Nome do produto
             {
                 if (strcmp(produto[i].nome, idStr) == 0)
                 {
-                    encontrado = i;//atribui a posição do produto ao ser encontrado
-                    break; // sai do laco ao ser encontrado
+                    encontrado = i; // atribui a posição do produto ao ser encontrado
+                    break;          // sai do laco ao ser encontrado
                 }
                 encontrado = i;
                 break;
@@ -422,7 +430,7 @@ void excluirProduto()//#SPRINT 2, função que permite excluir algum produto tan
         if (encontrado != -1) // se produto for encontrado...
         {
             printf("\tProduto %s encontrado. Deseja realmente excluir? (s/n): ", produto[encontrado].nome);
-            char resposta[5];//buffer
+            char resposta[5]; // buffer
             if (fgets(resposta, sizeof(resposta), stdin))
             {
                 resposta[strcspn(resposta, "\n")] = '\0';
@@ -430,7 +438,7 @@ void excluirProduto()//#SPRINT 2, função que permite excluir algum produto tan
                 if (strcmp(resposta, "s") == 0 || strcmp(resposta, "S") == 0)
                 {
                     // Remover o produto do array
-                    for (int i = encontrado; i < idproduto - 1; i++) //le até a quantidade de produtos - 1 tendo em vista que foi excluido 1 produto da lista
+                    for (int i = encontrado; i < idproduto - 1; i++) // le até a quantidade de produtos - 1 tendo em vista que foi excluido 1 produto da lista
                     {
                         produto[i] = produto[i + 1]; // atribui o proximo produto ao produto anterior sucessivamente, a partir do produto que foi encontrado, sobreescrevendo ele para que nao haja duplicação ou incongruência nos IDs
                     }
@@ -473,7 +481,7 @@ void excluirProduto()//#SPRINT 2, função que permite excluir algum produto tan
         printf("Erro ao ler a entrada.\n");
     }
 }
-void lerUsuarios() //#SPRINT 1 funcao que executa a leitura do banco de dados
+void lerUsuarios() // #SPRINT 1 funcao que executa a leitura do banco de dados
 {
     FILE *leitura = fopen("idusersenha.txt", "r");
     if (leitura == NULL)
@@ -492,7 +500,7 @@ void lerUsuarios() //#SPRINT 1 funcao que executa a leitura do banco de dados
 
         if (split != NULL)
         {
-            split = strtok(NULL, "|"); // agora split recebe o nome lido
+            split = strtok(NULL, "|");           // agora split recebe o nome lido
             strcpy(user[idUsuario].nome, split); // atribui split para o nome do usuario
 
             if (split != NULL)
@@ -517,10 +525,10 @@ void lerUsuarios() //#SPRINT 1 funcao que executa a leitura do banco de dados
     fclose(leitura);
 }
 
-int autentica() //#SPRINT 1 funcao que verifica se o nome de usuario ja esta cadastrado
+int autentica() // #SPRINT 1 funcao que verifica se o nome de usuario ja esta cadastrado
 {
     lerUsuarios();
-    char confirmaNome[MAX_NOME]; // variavel de usuario
+    char confirmaNome[MAX_NOME];   // variavel de usuario
     char confirmaSenha[MAX_SENHA]; // variavel para comparacao de senha
 
     printf("\tDigite o nome de usuario: ");
@@ -550,7 +558,7 @@ int autentica() //#SPRINT 1 funcao que verifica se o nome de usuario ja esta cad
     return 0;
 }
 
-void cadastrarUsuario() //#SPRINT 1 funcao responsavel pelo cadastro de usuarios
+void cadastrarUsuario() // #SPRINT 1 funcao responsavel pelo cadastro de usuarios
 {
     if (excedido == 1) // se a quantidade maxima de usuarios ja estiver cadastrada
     {
@@ -683,17 +691,17 @@ void cadastrarUsuario() //#SPRINT 1 funcao responsavel pelo cadastro de usuarios
     }
 }
 
-void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco de dados das vendas
+void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo banco de dados das vendas
 {
-    float precokg, valorkg, x; //variaveis de preços
-    char entrada[100];//buffer de entrada
-    char pesokg[10];//buffer de entrada
-    char opcao[10];//buffer de entrada
-    char nomeproduto[MAX_NOME];
-    char desc[100];
-    int id = -1;           // Inicialmente, nenhum ID
-    int produtoIndex = -1; // Índice do produto, se encontrado
-    structvendas novavenda; //um novo array de vendas para atribuir ao array principal
+    float precokg, valorkg, x; // variaveis de preços
+    char entrada[100];         // buffer de entrada
+    char pesokg[10];           // buffer de entrada
+    char opcao[10];            // buffer de entrada
+    char nomeproduto[MAX_NOME]; // atribuição do nome
+    char desc[100];         //descrição da venda avulsa
+    int id = -1;            // Inicialmente, nenhum ID
+    int produtoIndex = -1;  // Índice do produto, se encontrado
+    structvendas novavenda; // um novo array de vendas para atribuir ao array principal
 
     limpar_tela();
 
@@ -704,69 +712,68 @@ void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco
     if (fgets(opcao, sizeof(opcao), stdin) != NULL)
     {
         int escolha = atoi(opcao);
-        // printf("%i", escolha);
-
         switch (escolha)
         {
-        case 1:
+        case 1: // SPRINT 3
 
             menuProdutos();
             printf("\n\n\tInforme o id/nome do produto que deseja vender: ");
             if (fgets(entrada, sizeof(entrada), stdin) != NULL)
             {
-                
+
                 entrada[strcspn(entrada, "\n")] = '\0';
                 remove_espacos(entrada);
                 toLowerCase(entrada);
-                if (strlen(entrada) < 1)
+
+                if (strlen(entrada) < 1)//strlen() verifica se o tamanho da string entrada é maior que 1.
                 {
                     printf("Produto invalido");
                     return;
                 }
                 limpar_tela();
 
-                // Verifica se a entrada pode ser convertida para ID
-                id = atoi(entrada);
+                
+                id = atoi(entrada);//atoi() transforma valor inserido em inteiro
 
-                // Tenta encontrar o produto pelo ID ou pelo nome
+                
 
-                if (id > 0 && id <= MAX_VENDAS && produto[id - 1].preco > 0)
+                if (id > 0 && id <= MAX_VENDAS && produto[id - 1].preco > 0) // Se produto id/nome existe, atribui o id do produto a variavel de controle produtoIndex.
                 {
                     produtoIndex = id - 1; // Encontrado pelo ID
                 }
                 else
                 {
-                    // Se não encontrou pelo ID, procura pelo nome
-                    for (int i = 0; i < MAX_VENDAS; i++)
+                    
+                    for (int i = 0; i < MAX_VENDAS; i++)// Se não encontrou pelo ID, procura pelo nome
                     {
-                        if (strcmp(produto[i].nome, entrada) == 0 && produto[i].preco > 0)
+                        if (strcmp(produto[i].nome, entrada) == 0 && produto[i].preco > 0)//strcmp(), compara duas strings sendo 0 TRUE e 1 FALSE
                         {
-                            produtoIndex = i;
+                            produtoIndex = i;//atribui o id encontrado pelo nome
                             break;
                         }
                     }
                 }
 
-                // Verifica se o produto foi encontrado
-                if (produtoIndex >= 0)
+               
+                if (produtoIndex >= 0) // Verifica se o id do produto for valido
                 {
-                    strcpy(nomeproduto, produto[produtoIndex].nome);
+                    strcpy(nomeproduto, produto[produtoIndex].nome);//strcpy(destino, origem)
                     precokg = produto[produtoIndex].preco;
 
                     printf("\n\t%s R$%.2f/KG.\n\t\n\tInsira a quantidade de KGs: ", nomeproduto, precokg);
                     if (fgets(pesokg, sizeof(pesokg), stdin) != NULL)
                     {
                         pesokg[strcspn(pesokg, "\n")] = '\0';
-                        valorkg = strtof(pesokg, NULL);
+                        valorkg = strtof(pesokg, NULL); //strtof(var, NULL), transforma string em inteiro
 
-                        x = valorkg * precokg;
+                        x = valorkg * precokg;//resultado do peso
                         if (x > 0)
                         {
                             printf("\n\tValor a pagar: R$%.2f\n", x);
                             printf("\t1 - Confirma\n\t2 - Cancela\n\tEscolha: ");
 
-                            // le a escolha do usuário
-                            if (fgets(opcao, sizeof(opcao), stdin) != NULL)
+                            
+                            if (fgets(opcao, sizeof(opcao), stdin) != NULL)// lê a escolha do usuário
                             {
                                 int escolha = atoi(opcao);
 
@@ -777,38 +784,38 @@ void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco
                                     FILE *relatorioVendas = fopen("relatorioVendas.txt", "r");
                                     if (relatorioVendas != NULL)
                                     {
-                                        // Le a quant de linhas do relatorio de vendas e atribui no idvenda
+                                        // le a quantidade de vendas existentes no relatorio e atribui ao idvenda, para que a proxima venda seja sempre o proximo id
                                         idvenda = 0;
                                         char buffer[MAX_PRODUTO];
-                                        while (fgets(buffer, sizeof(buffer), relatorioVendas) != NULL)
+                                        while (fgets(buffer, sizeof(buffer), relatorioVendas) != NULL)//looping que le o arquivo relatorio de vendas
                                         {
-                                            idvenda++;
+                                            idvenda++;//atribui 1 a cada linha lida
                                         }
                                         fclose(relatorioVendas);
 
-                                        // Recebe o horario atual para a venda
-                                        time_t agora;
-                                        time(&agora);
+                                       
+                                        time_t agora; // Recebe o horario atual para a venda
+                                        time(&agora); //endereça o horario na variavel 'agora'
 
-                                        struct tm *local = localtime(&agora);
+                                        struct tm *local = localtime(&agora);//formata a string no padrão de data/horario
 
                                         char hora[80];
-                                        strftime(hora, sizeof(hora), "%Y-%m-%d %H:%M:%S", local);
+                                        strftime(hora, sizeof(hora), "%Y-%m-%d %H:%M:%S", local);//atribui os campos em string hora
 
-                                        strcpy(novavenda.horariovenda, hora);
+                                        strcpy(novavenda.horariovenda, hora);//atribui o horario da venda na nova venda
 
-                                        // Atualiza a nova venda no array de nova venda
-                                        novavenda.id = idvenda;
+                                       
+                                        novavenda.id = idvenda; // Atualiza id da nova venda no array de nova venda
                                         strcpy(novavenda.vendedor, user[idSessao].nome);
                                         novavenda.preco = x;
                                         strcpy(novavenda.produto, nomeproduto);
                                         strcpy(novavenda.pagamento, "relatorio");
-                                        // Armazena a venda no array de vendas
-                                        vendas[idvenda] = novavenda;
+                                        
+                                        vendas[idvenda] = novavenda;// Armazena todos os dadosda novavenda no array de vendas
 
                                         // Adiciona a nova venda ao arquivo
-                                        relatorioVendas = fopen("relatorioVendas.txt", "a");
-                                        if (relatorioVendas != NULL)
+                                        relatorioVendas = fopen("relatorioVendas.txt", "a");//abre o relatorio de vendas no modo 'append'
+                                        if (relatorioVendas != NULL)//se existe um relatorio entao ele escreve todo os dados do ultimo id do array vendas no relatorio
                                         {
                                             fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
                                             fclose(relatorioVendas);
@@ -864,33 +871,34 @@ void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco
             }
             break;
         case 2:
-            /*POSSO FAZER UM CATALOGO PARA VENDER PRODUTOS AVULSOS AQUI*/
+            //SPRINT 3 - produtos avulsos
             limpar_tela();
             printf("\tInforme um breve resumo: ");
-            fgets(desc, sizeof(desc), stdin);
+            fgets(desc, sizeof(desc), stdin);//insere a descrição da venda
             desc[strcspn(desc, "\n")] = '\0';
             toLowerCase(desc);
             if (strlen(desc) > 0)
             {
                 printf("\n\tInforme o valor da venda: R$");
-                fgets(entrada, sizeof(entrada), stdin);
+                fgets(entrada, sizeof(entrada), stdin);//buffer do valor da venda
                 entrada[strcspn(entrada, "\n")] = '\0';
 
-                if (contemLetras(entrada) == 1)
+                if (contemLetras(entrada) == 1)//se o usuario inseriu um caractere no campo 'valor', o programa sera retornado
                 {
                     printf("Apenas numeros!");
                     getch();
                     return;
                 }
                 else
-                {
+                {//SE NAO
                     float p = strtof(entrada, NULL); // converte a string entrada em float e atribui na variavel p
-                    if (p <= 0)
+                    if (p <= 0)//se o valor for invalido
                     {
                         printf("Insira um valor valido!");
                         return;
                     }
-                    strcpy(novavenda.produto, desc);
+
+                    strcpy(novavenda.produto, desc);//copia a descrição da venda para o nome do produto em novavenda
 
                     printf("\n\t1. Debito");
                     printf("\n\t2. Credito");
@@ -900,14 +908,15 @@ void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco
                     if (fgets(opcao, sizeof(opcao), stdin) && p > 0)
                     {
                         char buffer[100];
-                        // leio o relatorio de vendas para ter o ID da nova venda avulsa
-                        FILE *relatorioVendas = fopen("relatorioVendas.txt", "r");
-                        idvenda = 0;
+                        // lê o relatorio de vendas para ter o ID da nova venda avulsa
+                        FILE *relatorioVendas = fopen("relatorioVendas.txt", "r");//abre o relatorio de vendas em modo 'READ'
+                        idvenda = 0;//reseta a quantidade de vendas para refazer a leitura
                         while (fgets(buffer, sizeof(buffer), relatorioVendas) != NULL)
                         {
-                            idvenda++;
+                            idvenda++;//atribui a quantidade de vendas
                         }
                         fclose(relatorioVendas);
+                    
                         time_t now;
                         time(&now);
 
@@ -916,9 +925,10 @@ void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco
 
                         char hora[80];
                         strftime(hora, sizeof(hora), "%Y-%m-%d %H:%M:%S", local);
+
                         switch (escolha)
                         {
-                        case 1:
+                        case 1://DEBITO, a mesma logica de vender um produto, apenas armazena a descrição ao nome.
 
                             novavenda.id = idvenda;
                             novavenda.preco = p;
@@ -971,12 +981,125 @@ void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco
 
                             break;
 
-                        case 2:
+                        case 2:// CREDITO, a mesma logica de vender um produto, apenas armazena a descrição ao nome.
+                            
+                            novavenda.id = idvenda;
+                            novavenda.preco = p;
+                            strcpy(novavenda.produto, desc);
+                            strcpy(novavenda.vendedor, user[idSessao].nome);
+                            strcpy(novavenda.horariovenda, hora);
+                            strcpy(novavenda.pagamento, credito);
+                            vendas[idvenda] = novavenda;
 
+                            relatorioVendas = fopen("relatorioVendas.txt", "a");
+                            limpar_tela();
+                            printf("\n\tResumo da venda a ser cadastrada:\n");
+                            printf("\tNome: %s\n", vendas[idvenda].produto);
+                            printf("\tPreco: R$%.2f\n", vendas[idvenda].preco);
+                            printf("\tForma de pagamento: %s\n", vendas[idvenda].pagamento);
+                            printf("\t1 - Confirma\n\t2 - Cancela\n\tEscolha: ");
+                            if (fgets(opcao, sizeof(opcao), stdin) != NULL)
+                            {
+                                if (verificastringdigito(opcao))
+                                {
+                                    escolha = atoi(opcao);
+                                    switch (escolha)
+                                    {
+                                    case 1:
+                                        printf("Venda concluida: ID:%i | R$%.2f | %s | %s | %s | %s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
+                                        fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
+                                        fclose(relatorioVendas);
+                                        return;
+                                        break;
+                                    case 2:
+                                        printf("Cancelando a compra");
+                                        return;
+                                        break;
+                                    default:
+                                        printf("Opcao invalida");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    printf("Opcao invalida!");
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                printf("Opcao invalida!");
+                                return;
+                            }
                             break;
 
-                        case 3:
+                        case 3:// DINHEIRO, a mesma logica de vender um produto, apenas armazena a descrição ao nome e mostra o troco na tela
+                            novavenda.id = idvenda;
+                            novavenda.preco = p;
+                            strcpy(novavenda.produto, desc);
+                            strcpy(novavenda.vendedor, user[idSessao].nome);
+                            strcpy(novavenda.horariovenda, hora);
+                            strcpy(novavenda.pagamento, dinheiro);
+                            vendas[idvenda] = novavenda;
+                            float usuariopaga, troco;
+                            limpar_tela();
+                            printf("Troco para: R$");
+                            scanf("%f", &usuariopaga);
+                            limpabuffer();
 
+                            if (usuariopaga < novavenda.preco)
+                            {
+                                printf("\nO valor para calcular o troco deve ser maior que o valor da venda!");
+                                getch();
+                                return;
+                            }
+                            else
+                            {
+                                troco = usuariopaga - novavenda.preco;
+
+                                FILE *relatorioVendas = fopen("relatorioVendas.txt", "a");
+                                limpar_tela();
+                                printf("\n\tResumo da venda a ser cadastrada:\n");
+
+                                printf("\tNome: %s\n", vendas[idvenda].produto);
+                                printf("\tPreco: R$%.2f\n", vendas[idvenda].preco);
+                                printf("\tForma de pagamento: %s\n", vendas[idvenda].pagamento);
+                                printf("\n\tTroco do cliente: R$%.2f\n", troco);
+                                printf("\t1 - Confirma\n\t2 - Cancela\n\tEscolha: ");
+                                if (fgets(opcao, sizeof(opcao), stdin) != NULL)
+                                {
+                                    if (verificastringdigito(opcao))
+                                    {
+                                        escolha = atoi(opcao);
+                                        switch (escolha)
+                                        {
+                                        case 1:
+                                            printf("Venda concluida: ID:%i | R$%.2f | %s | %s | %s | %s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
+                                            fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
+                                            fclose(relatorioVendas);
+                                            return;
+                                            break;
+                                        case 2:
+                                            printf("Cancelando a compra");
+                                            return;
+                                            break;
+                                        default:
+                                            printf("Opcao invalida");
+                                            return;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        printf("Opcao invalida!");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    printf("Opcao invalida!");
+                                    return;
+                                }
+                            }
                             break;
                         default:
                             printf("opcao invalida");
@@ -1002,7 +1125,85 @@ void cadastrarVenda()//#SPRINT 3, função responsavel pelas vendas e pelo banco
     }
 }
 
-int obterOpcao() //#SPRINT 1 funcao responsavel por mostrar o menu
+void relatorioVendasCaixa()//SPRINT 3, relatorio de vendas onde o caixa só pode ver suas vendas
+{
+    FILE *relatorioVendas = fopen("relatorioVendas.txt", "r");//Abre o relatorio em modo leitura 'READ'
+    if (relatorioVendas == NULL)
+    {
+        perror("ARQUIVO VAZIO");
+        return;
+    }
+
+    int i = 0;
+    char buffer[MAX_PRODUTO];//buffer onde as linhas do arquivo serão inseridas para serem tratadas
+    printf("\tCODIGO  -  VALOR  -  PRODUTO  -  VENDEDOR  -  PAGAMENTO  -  HORARIO\n");
+    while (fgets(buffer, sizeof(buffer), relatorioVendas) != NULL)//looping que atribui as linhas ao buffer e depois endereça às variaveis
+    {
+        sscanf(buffer, "ID:%i|R$%f|%[^|]|%[^|]|%[^|]|%[^\n]",//sscanf() le o valor de buffer ignorando os caracteres informados, e atribui às strings, inteiros e reais
+               &vendas[i].id,
+               &vendas[i].preco,
+               vendas[i].produto,
+               vendas[i].vendedor,
+               vendas[i].pagamento,
+               vendas[i].horariovenda);
+        // Filtra apenas as vendas do caixa logado
+        if (strcmp(vendas[i].vendedor, user[idSessao].nome) == 0)//printa na tela apenas as linhas relacionadas ao nome do caixa
+        {
+
+            printf("\n\t    ID %i - R$%.2f - %s - %s - %s - %s\n",
+                   vendas[i].id,
+                   vendas[i].preco,
+                   vendas[i].produto,
+                   vendas[i].vendedor,
+                   vendas[i].pagamento,
+                   vendas[i].horariovenda);
+        }
+        i++;
+    }
+    fclose(relatorioVendas);
+}
+void relatorioVendas()//SPRINT 3, relatorio de todas as vendas, apenas o adm tem acesso
+{
+    limpar_tela();
+    FILE *relatorioVendas = fopen("relatorioVendas.txt", "r");
+    if (relatorioVendas == NULL)
+    {
+        perror("ARQUIVO VAZIO");
+        return;
+    }
+
+    
+    int i = 0;
+    char buffer[MAX_PRODUTO];
+    while (fgets(buffer, sizeof(buffer), relatorioVendas) != NULL)// atribui as linhas ao buffer e depois endereça às variaveis
+    {
+       
+        sscanf(buffer, "ID:%i|R$%f|%[^|]|%[^|]|%[^|]|%[^\n]",//sscanf() lê o valor de buffer ignorando os caracteres informados, e atribui às strings, inteiros e reais
+               &vendas[i].id,
+               &vendas[i].preco,
+               vendas[i].produto,
+               vendas[i].vendedor,
+               vendas[i].pagamento,
+               vendas[i].horariovenda);
+        i++;
+    }
+
+    fclose(relatorioVendas);
+    printf("\tCODIGO  -  VALOR  -  PRODUTO  -  VENDEDOR  -  PAGAMENTO  -  HORARIO\n");
+    
+    for (int j = 0; j < i; j++)// Exibindo o relatório de todas as vendas
+    {
+        printf("\n\t    ID %i - R$%.2f - %s - %s - %s - %s\n",
+               vendas[j].id,
+               vendas[j].preco,
+               vendas[j].produto,
+               vendas[j].vendedor,
+               vendas[j].pagamento,
+               vendas[j].horariovenda);
+    }
+}
+
+int obterOpcao() // #SPRINT 1 funcao responsavel por mostrar o menu
 {
     int opcao = 0;
     char buffer[100];
@@ -1035,7 +1236,7 @@ int obterOpcao() //#SPRINT 1 funcao responsavel por mostrar o menu
         }
     }
 }
-int menuADM()//#SPRINT 2, mostra o menu do administrador
+int menuADM() // #SPRINT 2, mostra o menu do administrador
 {
     lerProduto();
     int opcaoADM = 0;
@@ -1065,7 +1266,7 @@ int menuADM()//#SPRINT 2, mostra o menu do administrador
                     cadastrarProduto();
 
                     break;
-                /*case 2: //AQUI SERA FEITA A CHAMADA FUNÇÃO QUE IRA EFETUAR UMA VENDA
+                case 2: // AQUI SERA FEITA A CHAMADA FUNÇÃO QUE IRA EFETUAR UMA VENDA
                     // limpabuffer();
                     printf("\tEfetuar Venda\n");
                     cadastrarVenda();
@@ -1073,7 +1274,7 @@ int menuADM()//#SPRINT 2, mostra o menu do administrador
                 case 3: // AQUI SERA FEITA A CHAMADA DA FUNÇÃO QUE IRA IMPRIMIR O RELATORIO DE VENDAS GERAL
                     relatorioVendas();
                     getch();
-                    break;*/
+                    break;
                 case 4:
                     printf("Saindo...");
                     // getch();
@@ -1106,7 +1307,7 @@ int menuADM()//#SPRINT 2, mostra o menu do administrador
     }
 }
 
-int menuCAIXA()//#SPRINT 2, mostra o menu do caixa
+int menuCAIXA() // #SPRINT 2, mostra o menu do caixa
 {
     int opcaoCAIXA = 0;
     char bufferCAIXA[9];
@@ -1127,21 +1328,21 @@ int menuCAIXA()//#SPRINT 2, mostra o menu do caixa
             {
                 switch (opcaoCAIXA)
                 {
-               /* case 1: //AQUI SERA FEITO A CHAMADA DA FUNÇÃO QUE IRA CADASTRAR UMA VENDA
-                    printf("Efetuar Venda");
-                    cadastrarVenda();
-                    getch();
-                    break;*/
+                     case 1: //AQUI SERA FEITO A CHAMADA DA FUNÇÃO QUE IRA CADASTRAR UMA VENDA
+                         printf("Efetuar Venda");
+                         cadastrarVenda();
+                         getch();
+                         break;
                 case 2:
                     printf("\n\tConsultar Precos\n");
                     menuProdutos();
                     getch();
                     break;
-               /* case 3: //AQUI SERA FEITO A CHAMADA DA FUNÇÃO QUE IRA IMPRIMIR O RELATORIO DE VENDAS DO CAIXA
-                    printf("\n\t     RELATORIO DE VENDAS\n");
-                    relatorioVendasCaixa();
-                    getch();
-                    break;*/
+                     case 3: //AQUI SERA FEITO A CHAMADA DA FUNÇÃO QUE IRA IMPRIMIR O RELATORIO DE VENDAS DO CAIXA
+                         
+                         relatorioVendasCaixa();
+                         getch();
+                         break;
                 case 4:
                     printf("Saindo...");
                     getch();
@@ -1203,7 +1404,7 @@ int main()
 
                 case 2: // se for caixa
                     printf("CAIXA");
-                    //menuCAIXA();
+                    menuCAIXA();
                     break;
                 }
             }

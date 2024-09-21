@@ -1,0 +1,5 @@
+ID:0|R$12,00|pao|1234|dinheiro|2024-09-21 12:57:51
+ID:1|R$143,00|dsdsds|1234|credito|2024-09-21 13:24:46
+ID:2|R$23,00|asasa|1234|dinheiro|2024-09-21 13:24:55
+ID:3|R$12,00|cccc|caixa|debito|2024-09-21 13:27:26
+ID:4|R$448,50|jabuticaba|caixa|relatorio|2024-09-21 13:57:02

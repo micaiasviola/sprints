@@ -1,0 +1,2 @@
+1|banana|6,00
+2|jabuticaba|29,90
