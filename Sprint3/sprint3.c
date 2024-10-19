@@ -67,9 +67,11 @@ int limpar_tela() // #SPRINT 1 funcao para limpar a tela
 typedef struct
 { // SPRINT 3, estrutura para armazenar nomes de clientes
     char nome[MAX_NOME];
+    char phone[12];
 
-} cliente;
+} structcliente;
 
+structcliente clientes[MAX_LINHA];
 void limpabuffer() // #SPRINT 1 funcao para limpar o buffer apos um endereco de memoria ser escrito
 {
     int c;
@@ -90,6 +92,20 @@ int contemLetras(const char *str) // SPRINT 3 - Verifica se contem letras na str
         str++;
     }
     return 0; // Retorna 0 se não encontrar nenhuma letra
+}
+
+int contemDigitos(const char *str)
+{ // SPRINT 3 Função para verificar se contém apenas dígitos
+
+    while (*str)
+    {
+        if (!isdigit((unsigned char)*str))
+        {
+            return 0; // Retorna 0 se encontrar um caractere que não seja dígito
+        }
+        str++;
+    }
+    return 1; // Retorna 1 se todos os caracteres forem dígitos
 }
 
 void toLowerCase(char *str) // #SPRINT 1 transforma maiusculo em minusculo
@@ -179,7 +195,7 @@ void lerProduto() // #SPRINT 2 - responsavel pela leitura do banco de dados prod
 }
 void menuProdutos() // #SPRINT 2, Função que imprime na tela todos os produtos para consulta
 {
-    // lerProduto();
+    lerProduto();
     printf("\t       MENU\n\n");
 
     for (int i = 0; i < idproduto; i++) // percorre o array produtos a quantidade de produtos cadastrados
@@ -703,7 +719,7 @@ void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo ban
     int id = -1;                // Inicialmente, nenhum ID
     int produtoIndex = -1;      // Índice do produto, se encontrado
     structvendas novavenda;     // um novo array de vendas para atribuir ao array principal
-    cliente clientes;
+    structcliente clientes[MAX_LINHA];
 
     limpar_tela();
 
@@ -835,42 +851,65 @@ void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo ban
                                                     {
                                                     case 1:
                                                         limpar_tela();
-                                                        printf("\t\nDeseja inserir o nome do cliente na venda?\n\t1 - Confirma\n\t2 - Cancela\n\tEscolha:");
-                                                        if (fgets(opcao, sizeof(opcao), stdin) != NULL)
+
+                                                        printf("\t\nNome do cliente: ");
+                                                        char nomeCliente[50];
+                                                        fgets(nomeCliente, sizeof(nomeCliente), stdin);
+                                                        nomeCliente[strcspn(nomeCliente, "\n")] = '\0';
+
+                                                        if (strlen(nomeCliente) > 1 && strlen(nomeCliente) < 50)
                                                         {
-                                                            if (verificastringdigito(opcao))
+                                                            strcpy(clientes[idvenda].nome, nomeCliente);
+
+                                                            printf("\n\tDigite o numero de telefone do cliente: ");
+                                                            char phone[12];
+
+                                                            if (fgets(phone, sizeof(phone), stdin) != NULL)
                                                             {
-                                                                escolha = atoi(opcao);
-                                                                switch (escolha)
-                                                                {
-                                                                case 1:
-                                                                    printf("\t\nNome do cliente: ");
-                                                                    char nomeCliente[50];
-                                                                    fgets(nomeCliente, sizeof(nomeCliente), stdin);
+                                                                phone[strcspn(phone, "\n")] = '\0';
 
-                                                                    if (strlen(nomeCliente) > 1 && strlen(nomeCliente) < 50)
-                                                                    {
-                                                                        strcpy(clientes.nome, nomeCliente);
-
-                                                                        printf("Cliente cadastrado com sucesso");
-                                                                        getch();
-                                                                    }
-                                                                    break;
-                                                                case 2:
-
-                                                                    break;
+                                                                if (!contemDigitos(phone))
+                                                                { // Verificação atualizada
+                                                                    printf("\t\nInsira apenas digitos!");
+                                                                    getch();
+                                                                    return;
                                                                 }
+
+                                                                strcpy(clientes[idvenda].phone, phone);
+
+                                                                printf("\t\nCliente cadastrado com sucesso");
+                                                                printf("\n\tVenda concluida: ID:%i | R$%.2f | %s | %s | %s | %s | %s | %s\n",
+                                                                       vendas[idvenda].id,
+                                                                       vendas[idvenda].preco,
+                                                                       vendas[idvenda].produto,
+                                                                       vendas[idvenda].vendedor,
+                                                                       vendas[idvenda].pagamento,
+                                                                       vendas[idvenda].horariovenda,
+                                                                       clientes[idvenda].nome,
+                                                                       clientes[idvenda].phone);
+
+                                                                fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s|%s|%s\n",
+                                                                        vendas[idvenda].id,
+                                                                        vendas[idvenda].preco,
+                                                                        vendas[idvenda].produto,
+                                                                        vendas[idvenda].vendedor,
+                                                                        vendas[idvenda].pagamento,
+                                                                        vendas[idvenda].horariovenda,
+                                                                        clientes[idvenda].nome,
+                                                                        clientes[idvenda].phone);
+                                                                fclose(relatorioVendas);
+                                                                getch();
+                                                            }
+                                                            else
+                                                            {
+                                                                printf("Digite um número válido");
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            perror("Invalid");
+                                                            printf("/t/nInvalido");
                                                         }
-                                                        printf("\n\tVenda concluida: ID:%i | R$%.2f | %s | %s | %s | %s | %s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda, clientes.nome);
 
-                                                        fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
-                                                        fclose(relatorioVendas);
-                                                        getch();
                                                         return;
                                                         break;
                                                     case 2:
@@ -881,11 +920,6 @@ void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo ban
                                                         printf("Opcao invalida");
                                                         return;
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    printf("Opcao invalida!");
-                                                    return;
                                                 }
                                             }
                                             else
@@ -922,41 +956,65 @@ void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo ban
                                                     {
                                                     case 1:
                                                         limpar_tela();
-                                                        printf("\t\nDeseja inserir o nome do cliente na venda?\n\t1 - Confirma\n\t2 - Cancela\n\tEscolha:");
-                                                        if (fgets(opcao, sizeof(opcao), stdin) != NULL)
+
+                                                        printf("\t\nNome do cliente: ");
+                                                        char nomeCliente[50];
+                                                        fgets(nomeCliente, sizeof(nomeCliente), stdin);
+                                                        nomeCliente[strcspn(nomeCliente, "\n")] = '\0';
+
+                                                        if (strlen(nomeCliente) > 1 && strlen(nomeCliente) < 50)
                                                         {
-                                                            if (verificastringdigito(opcao))
+                                                            strcpy(clientes[idvenda].nome, nomeCliente);
+
+                                                            printf("\n\tDigite o numero de telefone do cliente: ");
+                                                            char phone[12];
+
+                                                            if (fgets(phone, sizeof(phone), stdin) != NULL)
                                                             {
-                                                                escolha = atoi(opcao);
-                                                                switch (escolha)
-                                                                {
-                                                                case 1:
-                                                                    printf("\t\nNome do cliente: ");
-                                                                    char nomeCliente[50];
-                                                                    fgets(nomeCliente, sizeof(nomeCliente), stdin);
+                                                                phone[strcspn(phone, "\n")] = '\0';
 
-                                                                    if (strlen(nomeCliente) > 1 && strlen(nomeCliente) < 50)
-                                                                    {
-                                                                        strcpy(clientes.nome, nomeCliente);
-
-                                                                        printf("Cliente cadastrado com sucesso");
-                                                                        getch();
-                                                                    }
-                                                                    break;
-                                                                case 2:
-
-                                                                    break;
+                                                                if (!contemDigitos(phone))
+                                                                { // Verificação atualizada
+                                                                    printf("\t\nInsira apenas digitos!");
+                                                                    getch();
+                                                                    return;
                                                                 }
+
+                                                                strcpy(clientes[idvenda].phone, phone);
+
+                                                                printf("\t\nCliente cadastrado com sucesso");
+                                                                printf("\n\tVenda concluida: ID:%i | R$%.2f | %s | %s | %s | %s | %s | %s\n",
+                                                                       vendas[idvenda].id,
+                                                                       vendas[idvenda].preco,
+                                                                       vendas[idvenda].produto,
+                                                                       vendas[idvenda].vendedor,
+                                                                       vendas[idvenda].pagamento,
+                                                                       vendas[idvenda].horariovenda,
+                                                                       clientes[idvenda].nome,
+                                                                       clientes[idvenda].phone);
+
+                                                                fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s|%s|%s\n",
+                                                                        vendas[idvenda].id,
+                                                                        vendas[idvenda].preco,
+                                                                        vendas[idvenda].produto,
+                                                                        vendas[idvenda].vendedor,
+                                                                        vendas[idvenda].pagamento,
+                                                                        vendas[idvenda].horariovenda,
+                                                                        clientes[idvenda].nome,
+                                                                        clientes[idvenda].phone);
+                                                                fclose(relatorioVendas);
+                                                                getch();
+                                                            }
+                                                            else
+                                                            {
+                                                                printf("Digite um número válido");
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            perror("Invalid");
+                                                            printf("/t/nInvalido");
                                                         }
-                                                        printf("\n\tVenda concluida: ID:%i | R$%.2f | %s | %s | %s | %s |%s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda, clientes.nome);
-                                                        fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
-                                                        fclose(relatorioVendas);
-                                                        getch();
+
                                                         return;
                                                         break;
                                                     case 2:
@@ -967,11 +1025,6 @@ void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo ban
                                                         printf("Opcao invalida");
                                                         return;
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    printf("Opcao invalida!");
-                                                    return;
                                                 }
                                             }
                                             else
@@ -1023,41 +1076,63 @@ void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo ban
                                                         {
                                                         case 1:
                                                             limpar_tela();
-                                                            printf("\t\nDeseja inserir o nome do cliente na venda?\n\t1 - Confirma\n\t2 - Cancela\n\tEscolha:");
-                                                            if (fgets(opcao, sizeof(opcao), stdin) != NULL)
+                                                            printf("\t\nNome do cliente: ");
+                                                            char nomeCliente[50];
+                                                            fgets(nomeCliente, sizeof(nomeCliente), stdin);
+                                                            nomeCliente[strcspn(nomeCliente, "\n")] = '\0';
+
+                                                            if (strlen(nomeCliente) > 1 && strlen(nomeCliente) < 50)
                                                             {
-                                                                if (verificastringdigito(opcao))
+                                                                strcpy(clientes[idvenda].nome, nomeCliente);
+
+                                                                printf("\n\tDigite o numero de telefone do cliente: ");
+                                                                char phone[12];
+
+                                                                if (fgets(phone, sizeof(phone), stdin) != NULL)
                                                                 {
-                                                                    escolha = atoi(opcao);
-                                                                    switch (escolha)
-                                                                    {
-                                                                    case 1:
-                                                                        printf("\t\nNome do cliente: ");
-                                                                        char nomeCliente[50];
-                                                                        fgets(nomeCliente, sizeof(nomeCliente), stdin);
+                                                                    phone[strcspn(phone, "\n")] = '\0';
 
-                                                                        if (strlen(nomeCliente) > 1 && strlen(nomeCliente) < 50)
-                                                                        {
-                                                                            strcpy(clientes.nome, nomeCliente);
-
-                                                                            printf("Cliente cadastrado com sucesso");
-                                                                            getch();
-                                                                        }
-                                                                        break;
-                                                                    case 2:
-
-                                                                        break;
+                                                                    if (!contemDigitos(phone))
+                                                                    { // Verificação atualizada
+                                                                        printf("\t\nInsira apenas digitos!");
+                                                                        getch();
+                                                                        return;
                                                                     }
+
+                                                                    strcpy(clientes[idvenda].phone, phone);
+
+                                                                    printf("\t\nCliente cadastrado com sucesso");
+                                                                    printf("\n\tVenda concluida: ID:%i | R$%.2f | %s | %s | %s | %s | %s | %s\n",
+                                                                           vendas[idvenda].id,
+                                                                           vendas[idvenda].preco,
+                                                                           vendas[idvenda].produto,
+                                                                           vendas[idvenda].vendedor,
+                                                                           vendas[idvenda].pagamento,
+                                                                           vendas[idvenda].horariovenda,
+                                                                           clientes[idvenda].nome,
+                                                                           clientes[idvenda].phone);
+
+                                                                    fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s|%s|%s\n",
+                                                                            vendas[idvenda].id,
+                                                                            vendas[idvenda].preco,
+                                                                            vendas[idvenda].produto,
+                                                                            vendas[idvenda].vendedor,
+                                                                            vendas[idvenda].pagamento,
+                                                                            vendas[idvenda].horariovenda,
+                                                                            clientes[idvenda].nome,
+                                                                            clientes[idvenda].phone);
+                                                                    fclose(relatorioVendas);
+                                                                    getch();
+                                                                }
+                                                                else
+                                                                {
+                                                                    printf("Digite um número válido");
                                                                 }
                                                             }
                                                             else
                                                             {
-                                                                perror("Invalid");
+                                                                printf("/t/nInvalido");
                                                             }
-                                                            printf("\n\tVenda concluida: ID:%i | R$%.2f | %s | %s | %s | %s | %s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda, clientes.nome);
-                                                            fprintf(relatorioVendas, "ID:%i|R$%.2f|%s|%s|%s|%s\n", vendas[idvenda].id, vendas[idvenda].preco, vendas[idvenda].produto, vendas[idvenda].vendedor, vendas[idvenda].pagamento, vendas[idvenda].horariovenda);
-
-                                                            fclose(relatorioVendas);
 
                                                             getch();
                                                             return;
@@ -1376,80 +1451,135 @@ void cadastrarVenda() // #SPRINT 3, função responsavel pelas vendas e pelo ban
     }
 }
 
-void relatorioVendasCaixa() // SPRINT 3, relatorio de vendas onde o caixa só pode ver suas vendas
-{
-    FILE *relatorioVendas = fopen("relatorioVendas.txt", "r"); // Abre o relatorio em modo leitura 'READ'
-    if (relatorioVendas == NULL)
-    {
-        perror("ARQUIVO VAZIO");
-        return;
-    }
-
-    int i = 0;
-    char buffer[MAX_PRODUTO]; // buffer onde as linhas do arquivo serão inseridas para serem tratadas
-    printf("\tCODIGO  -  VALOR  -  PRODUTO  -  VENDEDOR  -  PAGAMENTO  -  HORARIO\n");
-    while (fgets(buffer, sizeof(buffer), relatorioVendas) != NULL) // looping que atribui as linhas ao buffer e depois endereça às variaveis
-    {
-        sscanf(buffer, "ID:%i|R$%f|%[^|]|%[^|]|%[^|]|%[^\n]", // sscanf() le o valor de buffer ignorando os caracteres informados, e atribui às strings, inteiros e reais
-               &vendas[i].id,
-               &vendas[i].preco,
-               vendas[i].produto,
-               vendas[i].vendedor,
-               vendas[i].pagamento,
-               vendas[i].horariovenda);
-        // Filtra apenas as vendas do caixa logado
-        if (strcmp(vendas[i].vendedor, user[idSessao].nome) == 0) // printa na tela apenas as linhas relacionadas ao nome do caixa
-        {
-
-            printf("\n\t    ID %i - R$%.2f - %s - %s - %s - %s\n",
-                   vendas[i].id,
-                   vendas[i].preco,
-                   vendas[i].produto,
-                   vendas[i].vendedor,
-                   vendas[i].pagamento,
-                   vendas[i].horariovenda);
-        }
-        i++;
-    }
-    fclose(relatorioVendas);
-}
-void relatorioVendas() // SPRINT 3, relatorio de todas as vendas, apenas o adm tem acesso
-{
+void relatorioVendasCaixa() {
     limpar_tela();
-    FILE *relatorioVendas = fopen("relatorioVendas.txt", "r");
-    if (relatorioVendas == NULL)
-    {
+    FILE *arquivo = fopen("relatorioVendas.txt", "r");
+    if (arquivo == NULL) {
         perror("ARQUIVO VAZIO");
         return;
     }
 
     int i = 0;
-    char buffer[MAX_PRODUTO];
-    while (fgets(buffer, sizeof(buffer), relatorioVendas) != NULL) // atribui as linhas ao buffer e depois endereça às variaveis
-    {
+    char buffer[200];
+    while (fgets(buffer, sizeof(buffer), arquivo) != NULL) {
+        if (strlen(buffer) > 1) {
+            buffer[strcspn(buffer, "\n")] = '\0'; 
 
-        sscanf(buffer, "ID:%i|R$%f|%[^|]|%[^|]|%[^|]|%[^\n]", // sscanf() lê o valor de buffer ignorando os caracteres informados, e atribui às strings, inteiros e reais
-               &vendas[i].id,
-               &vendas[i].preco,
-               vendas[i].produto,
-               vendas[i].vendedor,
-               vendas[i].pagamento,
-               vendas[i].horariovenda);
-        i++;
+            // Substitui a vírgula por ponto no preço
+            char *p = strstr(buffer, "R$");
+            if (p != NULL) {
+                char *comma = strchr(p, ',');
+                if (comma != NULL) {
+                    *comma = '.'; // Substitui a vírgula por ponto
+                }
+            }
+
+            int camposLidos = sscanf(buffer, "ID:%i|R$%f|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^\n]",
+                                     &vendas[i].id,
+                                     &vendas[i].preco,
+                                     vendas[i].produto,
+                                     vendas[i].vendedor,
+                                     vendas[i].pagamento,
+                                     vendas[i].horariovenda,
+                                     clientes[i].nome,
+                                     clientes[i].phone);
+
+            if (camposLidos == 8) {
+                if (strcmp(vendas[i].vendedor, user[idSessao].nome) == 0) {
+                    i++;
+                }
+            } else {
+                fprintf(stderr, "Erro ao ler a linha: %s (campos lidos: %d)\n", buffer, camposLidos);
+            }
+        }
     }
 
-    fclose(relatorioVendas);
-    printf("\tCODIGO  -  VALOR  -  PRODUTO  -  VENDEDOR  -  PAGAMENTO  -  HORARIO\n");
+    fclose(arquivo);
 
-    for (int j = 0; j < i; j++) // Exibindo o relatório de todas as vendas
-    {
-        printf("\n\t    ID %i - R$%.2f - %s - %s - %s - %s\n",
+    printf("\tCODIGO  -  VALOR  -  PRODUTO  -  VENDEDOR  -  PAGAMENTO  -  HORARIO | CLIENTE | TELEFONE\n");
+
+    for (int j = 0; j < i; j++) {
+        printf("\n\t    ID %i - R$%.2f - %s - %s - %s - %s | %s | %s\n",
                vendas[j].id,
                vendas[j].preco,
                vendas[j].produto,
                vendas[j].vendedor,
                vendas[j].pagamento,
-               vendas[j].horariovenda);
+               vendas[j].horariovenda,
+               clientes[j].nome,
+               clientes[j].phone);
+    }
+}
+
+void relatorioVendas() // SPRINT 3, relatorio de todas as vendas, apenas o adm tem acesso
+{
+    limpar_tela();
+    FILE *arquivo = fopen("relatorioVendas.txt", "r");
+    if (arquivo == NULL)
+    {
+        perror("ARQUIVO VAZIO");
+        return;
+    }
+
+    int i = 0;
+    char buffer[200];
+    while (fgets(buffer, sizeof(buffer), arquivo) != NULL)
+    {
+        // Verifica se a linha não está vazia antes de tentar ler
+        if (strlen(buffer) > 1)
+        {
+            // Remove caracteres indesejados
+            buffer[strcspn(buffer, "\n")] = '\0';
+
+            // Substitui a vírgula por ponto no preço
+            char *p = strstr(buffer, "R$"); //bucando a substring 'R$' dentro da string buffer
+            if (p != NULL)
+            {
+                char *comma = strchr(p, ',');//busca a primeira ocorrencia de um caractere
+                if (comma != NULL)
+                {
+                    *comma = '.'; // Substitui a vírgula por ponto
+                }
+            }
+
+            // Lê os campos da linha
+            int camposLidos = sscanf(buffer, "ID:%i|R$%f|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^\n]",
+                                     &vendas[i].id,
+                                     &vendas[i].preco,
+                                     vendas[i].produto,
+                                     vendas[i].vendedor,
+                                     vendas[i].pagamento,
+                                     vendas[i].horariovenda,
+                                     clientes[i].nome,
+                                     clientes[i].phone);
+
+            if (camposLidos == 8)
+            {
+                i++;
+            }
+            else
+            {//debbugar eventuais erros de leitura
+                fprintf(stderr, "Erro ao ler a linha: %s (campos lidos: %d)\n", buffer, camposLidos);
+            }
+        }
+    }
+
+    fclose(arquivo);
+
+    printf("\tCODIGO  -  VALOR  -  PRODUTO  -  VENDEDOR  -  PAGAMENTO  -  HORARIO | CLIENTE | TELEFONE\n");
+
+    for (int j = 0; j < i; j++)
+    {
+        // Exibindo o relatório de todas as vendas
+        printf("\n\t    ID %i - R$%.2f - %s - %s - %s - %s | %s | %s\n",
+               vendas[j].id,
+               vendas[j].preco,
+               vendas[j].produto,
+               vendas[j].vendedor,
+               vendas[j].pagamento,
+               vendas[j].horariovenda,
+               clientes[j].nome,
+               clientes[j].phone);
     }
 }
 
@@ -1581,12 +1711,12 @@ int menuCAIXA() // #SPRINT 2, mostra o menu do caixa
                 case 1: // AQUI SERA FEITO A CHAMADA DA FUNÇÃO QUE IRA CADASTRAR UMA VENDA
                     printf("Efetuar Venda");
                     cadastrarVenda();
-                    getch();
+                    
                     break;
                 case 2:
-                    printf("\n\tConsultar Precos\n");
                     menuProdutos();
                     getch();
+                    
                     break;
                 case 3: // AQUI SERA FEITO A CHAMADA DA FUNÇÃO QUE IRA IMPRIMIR O RELATORIO DE VENDAS DO CAIXA
 
@@ -1617,7 +1747,7 @@ int menuCAIXA() // #SPRINT 2, mostra o menu do caixa
 
 int main()
 {
-    setlocale(LC_ALL, "Portuguese");
+    setlocale(LC_ALL, "pt_BR");
     int opcao;
     lerUsuarios();
     limpar_tela();
