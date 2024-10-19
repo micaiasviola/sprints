@@ -7,3 +7,5 @@ ID:5|R$149,50|jabuticaba|1234|credito|2024-10-19 10:22:46|mcidmcdc|1235423
 ID:6|R$144,00|bananananica|caixa|dinheiro|2024-10-19 10:32:54|lokao|1234
 ID:7|R$6000.00|bananananica|caixa|debito|2024-10-19 11:12:58|nilo|12997901283
 ID:8|R$6.00|banana|1234|debito|2024-10-19 11:19:16|12121|2121212
+ID:9|R$15.00|155115|1234|debito|2024-10-19 13:01:08|lokodaruia|123453
+ID:10|R$10000.00|efjnbpef|caixa|dinheiro|2024-10-19 13:07:50|mikola|12988632917
